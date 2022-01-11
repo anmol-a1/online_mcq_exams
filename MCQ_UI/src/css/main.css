@@ -1,0 +1,84 @@
+.div12,.div13{
+    display:inline-block;
+    height: 400px;
+    width: 300px;
+    background-color: bisque;
+    margin-top: 100px;
+    margin-right: 300px;
+}
+.inimg{
+    height: 300px;
+    width: 300px;
+    
+}
+.abcd{
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+}
+.div121{
+   margin-left: 100px;
+}
+.innerlink{
+    margin-left: 20px;
+}
+.abcd1{
+    background-image: url(../images/background.png);
+    height: 100vh; 
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    
+}
+
+.abcd3{
+    background-image: url(../images/background.png);
+    height: 100vh; 
+    background-position: center;
+    background-repeat: repeat;
+    background-size: cover;
+    position:sticky;
+    /* top: 0px; */
+    width: 100vw;
+    /* left: 0px; */
+    
+}
+.abcd4{
+    position:relative;
+}
+.anmol{
+    max-width: 700px;
+    margin: 130px auto;
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+    background-color: rgb(0, 174, 255);
+}
+.anmol5{
+    max-width: 700px;
+    margin: 10px auto;
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+    background-color: rgb(0, 174, 255);
+}
+
+.abcd2{
+    background-image: url(../images/background.png);
+    height: 100vh; 
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.tushar{
+    max-width: 1100px;
+    margin: 130px auto;
+    border-radius: 10px;
+    
+    background-color: rgb(0, 174, 255);
+}
+.tushar1{
+    max-width: 1100px;
+    margin: 10px auto;
+    border-radius: 10px;
+    
+    background-color: rgb(0, 174, 255);
+}
