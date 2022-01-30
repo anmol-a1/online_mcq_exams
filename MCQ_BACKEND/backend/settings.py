@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'student',
-    # 'drf_yasg',
     'teacher',
     'users',
     'rest_framework.authtoken',
@@ -146,6 +145,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
     'rest_framework_simplejwt.authentication.JWTAuthentication'
     ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ]
+
 }
 
 # Static files (CSS, JavaScript, Images)
@@ -155,7 +158,8 @@ STATIC_URL = '/static/'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000"
 ]
-
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 

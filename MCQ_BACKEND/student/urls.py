@@ -17,12 +17,15 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib import admin
 from django.urls import path,include
-from .views import UpcomingExamDetails,ExamQuestions,AttemptedDetails,PostResult,Checking,ExamResult
+from .views import UpcomingExamDetails,ExamQuestions,AttemptedDetails,PostResult,Checking,ExamResults,CheckingAttempt,InitializeExamData,UpdateOnDetail
 urlpatterns = [
     path('upcomingexams/<str:year>/<str:stream>',UpcomingExamDetails.as_view(),name="upcoming_exams"),
     path('examsquestions/<int:id>',ExamQuestions.as_view(),name="exam_questions"),
     path('attempteddetails/<int:id>',AttemptedDetails.as_view(),name="exam_questions"),
     path('postresult/',PostResult.as_view(),name="exam_questions"),
     path('checking/<int:userid>/<int:examid>',Checking.as_view(),name="exam_questions"),
-    path('examresults/<int:examid>',ExamResult.as_view(),name="exam_questions")
+    path('checkingattempt/<int:userid>/<int:examid>',CheckingAttempt.as_view(),name="exam_questions"),
+    path('initializedata/',InitializeExamData.as_view(),name="exam_initialize"),
+    path('examupdate/<int:pk>',UpdateOnDetail.as_view(),name="exam_update"),
+    path('examresults/<int:examid>',ExamResults.as_view(),name="exam_questions")
 ]

@@ -1,60 +1,49 @@
 import React from 'react'
 import axiosInstance from '../Axios';
-import { useLocation } from 'react-router';
 import { useEffect } from 'react';
+import { connectAdvanced, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import { Upcomingdiv } from './Upcomingdiv';
 import Attempteddiv from './Attempteddiv';
 import { useNavigate } from 'react-router-dom';
 const Studenthomepage = (props) => {
     const history = useNavigate();
-    const [data, setdata] = useState(null)
-    const [data1, setdata1] = useState(null)
-    const { state } = useLocation();
-    const { email, year, stream, id, user_name, name } = state;
-    var { reloadloca } = state;
-    const passobj = {
-        email: email,
-        year: year,
-        stream: stream,
-        id: id,
-        user_name: user_name
+    const dispatch = useDispatch();
+    const user = useSelector(state => state.Authreducer.user);
+    if(user===null){
+        props.showalert("please login","danger");
+        history('/');
     }
+    const [data, setdata] = useState(null);
+    const [data1, setdata1] = useState(null);
+    const { year, stream, id, user_name,first_name } = user;
     const [load, setload] = useState(false);
     useEffect(() => {
         async function fetchExamUpcoming() {
-
+            props.setprogress(10);
             let response = await fetch('http://127.0.0.1:8000/student/upcomingexams/' + year + '/' + stream);
+            props.setprogress(50);
             let response1 = await fetch('http://127.0.0.1:8000/student/attempteddetails/' + id);
             let data = await response.json();
+console.log(data);
+            props.setprogress(80);
             let data1 = await response1.json();
             setdata1(data1);
             setdata(data);
+            props.setprogress(100);
             setload(true);
         }
         fetchExamUpcoming();
     }, [load, stream, year, id])
     const handleSubmit = async (e) => {
-
-        try {
-            const abcd = await axiosInstance.post('logout/blacklist/', {
-                refresh_token: localStorage.getItem('refresh_token'),
-            });
-            console.log(abcd);
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            axiosInstance.defaults.headers['Authorization'] = null;
-            props.showalert("logged out successfully", "danger");
-            history('/');
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    if (reloadloca === true) {
-        setTimeout(() => {
-            window.open("http://localhost:3000/", "_self");
-        }, 10000);
-
+        props.setprogress(50);
+        dispatch({
+            type: 'LOGOUT_USER'
+        })
+        props.setprogress(100);
+        history('/');
+        
     }
     return (
 
@@ -64,7 +53,7 @@ const Studenthomepage = (props) => {
 
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav mr-auto">
-                            <li className="nav-item active"> <p>{name}  {user_name}</p>
+                            <li className="nav-item active"> <p>{first_name}  {user_name}</p>
                             </li>
                         </ul>
 
@@ -99,7 +88,7 @@ const Studenthomepage = (props) => {
                             {
 
                                 load ? data.map((element) => (
-                                    <Upcomingdiv id={id} key={element.id} passobj={passobj} element={element} />
+                                    <Upcomingdiv id={id} setprogress={props.setprogress} key={element.id} element={element} />
 
                                 )
                                 )
@@ -117,22 +106,19 @@ const Studenthomepage = (props) => {
                             
 
                             <p className="my-3">Attempted Exams :</p>
-                            <div className="form-row">
-                                <div className="col-md-3 mb-3">
+                            <div className="form-row" style={{textAlign:"center"}}>
+                                <div className="col-md-4 mb-4">
                                     <label htmlFor="validationServer01">Subject</label>
 
                                 </div>
 
-                                <div className="col-md-2 mb-2">
+                                <div className="col-md-4 mb-4">
                                     <label htmlFor="validationServer02">Date</label>
 
 
                                 </div>
-                                <div className="col-md-3 mb-3">
+                                <div className="col-md-4 mb-4">
                                     <label htmlFor="validationServer02">Marks</label>
-                                </div>
-                                <div className="col-md-2 mb-2">
-                                    <label htmlFor="validationServer02">Result</label>
                                 </div>
                             </div>
 
@@ -155,4 +141,4 @@ const Studenthomepage = (props) => {
     )
 }
 
-export default Studenthomepage
+export default Studenthomepage;

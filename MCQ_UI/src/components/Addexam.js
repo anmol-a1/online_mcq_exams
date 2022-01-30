@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 import '../css/main.css'
 import { useLocation } from 'react-router-dom';
 import { useState } from "react";
+import { useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 const Addexam = (props) => {
     const history=useNavigate();
-    const { state } = useLocation();
-    const { email, id, user_name } = state;
+    const user = useSelector(state => state.Authreducer.user);
+    const { email, id, user_name } = user;
     console.log(email);
     const [formData, updateFormData] = useState({ subname: "", hoster: id, year: "", stream: "", date: "", starttime: "", endtime: "" });
-
     const handleChange = (e) => {
         updateFormData({
             ...formData,
@@ -20,7 +20,7 @@ const Addexam = (props) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(formData);
-
+        props.setprogress(0);
         const addexam = async () => {
             const was = await fetch('http://127.0.0.1:8000/teacher/examhostdata/', {
                 method: 'POST',
@@ -28,19 +28,13 @@ const Addexam = (props) => {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    subname:formData.subname ,
-                    hoster:formData.hoster ,
-                    stream:formData.stream,
-                    date:formData.date ,
-                    year:formData.year,
-                    starttime:formData.starttime ,
-                    endtime:formData.endtime ,
-                })
+                body: JSON.stringify(formData)
             })
+            props.setprogress(70);
             let ds=await was.json();
             props.showalert("exam hosted successfully","success");
             const examid=ds.id;
+            props.setprogress(100);
             history('/questions', {
                 state: {
                     examid:examid

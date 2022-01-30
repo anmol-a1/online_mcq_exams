@@ -1,6 +1,7 @@
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import status,views
 from rest_framework.response import Response
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.views import APIView
 from .serializers import CustomUserSerializer,SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -11,6 +12,8 @@ from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 import jwt
+import json
+import pandas as pd
 from django.conf import settings 
 # from drf_yasg.utils import swagger_auto_schema
 # from drf_yasg import openapi
@@ -21,15 +24,45 @@ from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnico
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
+from django.contrib.auth.hashers import make_password
 from .utils import Util
+from rest_framework import viewsets
+from rest_framework.parsers import FormParser,MultiPartParser,JSONParser,FileUploadParser
 from django.shortcuts import redirect
+from rest_framework import viewsets
 from django.http import HttpResponsePermanentRedirect
+from pyexcel_xlsx import get_data
+from .models import NewUser
 import os
 app_name = 'users'
 class Users(generics.ListAPIView):
     permission_classes = [AllowAny]
     queryset = NewUser.objects.all()
     serializer_class = UsersListSerializer
+class FileUplaod(views.APIView):
+    parser_classes = (MultiPartParser,FormParser,JSONParser)
+    # parser_classes = [FileUploadParser]
+    def post(self, request, format=None):
+        file_obj = request.data['fileuploaded']
+        print(file_obj)
+        file_data=file_obj.read().decode("utf-8")
+        csv_data=file_data.split("\n")
+        lmn=0
+        for x in csv_data:
+            firls=x.split(",")
+            lmn+=1
+            if lmn==1:
+                continue
+            if(len(firls)>1):
+                print(firls)
+                try:
+                    created=NewUser.objects.update_or_create(first_name=firls[0],user_name=firls[1],password=make_password(firls[2]),email=firls[3],stream=firls[4],year=firls[5],is_active=True)
+                except:
+                    pass
+        # data=get_data(file_obj)
+        # print(json.dumps(data))
+        return Response(status=204)
+    
 class CustomUserCreate(APIView):
     permission_classes = [AllowAny]
 
@@ -101,3 +134,26 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    # authentication_classes = [TokenAuthentication]
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = self.get_token(self.user)
+        data['refresh'] = str(refresh)
+        data['access'] = str(refresh.access_token)
+        # Add extra responses here
+        data['username'] = self.user.email
+        data['isstaff']=self.user.is_staff
+        data['stream']=self.user.stream
+        data['year']=self.user.year
+        data['id']=self.user.id
+        data['address']=self.user.about
+        data['email']=self.user.email
+        data['user_name']=self.user.user_name
+        data['first_name']=self.user.first_name
+        data['random_num']=self.user.randomnum
+        print(data)
+        return data
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer

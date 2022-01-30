@@ -2,6 +2,12 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from users.models import NewUser
+import random
+def upload_to(instance, filename):
+    n1 = random.randint(1,12147483547)
+    n2 = random.randint(1,12147483547)
+    filename=str(n1)+str(n2)+filename
+    return 'examimages/{filename}'.format(filename=filename)
 class Exam(models.Model):
     id=models.AutoField(primary_key=True)
     subname=models.CharField(max_length=70,default="Maths")
@@ -17,12 +23,18 @@ class Questions(models.Model):
     prim_key=models.AutoField(primary_key=True)
     id=models.ForeignKey(Exam, on_delete=models.CASCADE,related_name='questionsview')
     ques=models.TextField(null=False)
+    quesimg=models.ImageField(("Image"), upload_to=upload_to,blank=True)
     opt1=models.TextField(null=False)
+    opt1img=models.ImageField(("Image"), upload_to=upload_to,blank=True)
     opt2=models.TextField(null=False)
+    opt2img=models.ImageField(("Image"), upload_to=upload_to,blank=True)
+    browsetime=models.IntegerField(default=2)
     opt3=models.TextField(null=False)
+    opt3img=models.ImageField(("Image"), upload_to=upload_to,blank=True)
     opt4=models.TextField(null=False)
+    opt4img=models.ImageField(("Image"), upload_to=upload_to,blank=True)
+    correctoption=models.IntegerField(default=random.randint(1, 5))
     totaltime=models.IntegerField(default=1)
-    correctoption=models.IntegerField()
     marks=models.IntegerField(default=1)
     #     def get_queryset(self):
     #         return super().get_queryset() .filter(status='published')

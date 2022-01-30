@@ -17,21 +17,25 @@ class CustomUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
     user_name = serializers.CharField(required=True)
     password = serializers.CharField(min_length=8, write_only=True)
+    print("sadhe",password)
 
     class Meta:
         model = NewUser
-        fields = ('id','email','first_name','user_name', 'password','about','start_date','is_staff','is_active','year','stream','rel_key')
+        fields = ('id','email','first_name','user_name', 'password','about','is_staff','is_active','year','stream','rel_key')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
 
         password = validated_data.pop('password', None)
+        print("chakchakit",password)
         email=validated_data['email'],
         username=validated_data['user_name']
         # as long as the fields are the same, we can just use this
         instance = self.Meta.model(**validated_data)
+        print(instance)
         if password is not None:
             instance.set_password(password)
+        print(instance.password)
         instance.save()
         return instance
 class ResetPasswordEmailRequestSerializer(serializers.Serializer):
